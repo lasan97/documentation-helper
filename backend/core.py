@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Any, List, Tuple
 
 from dotenv import load_dotenv
+from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
 from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain_community.vectorstores import Pinecone as PineconeLangChain
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
@@ -9,20 +10,20 @@ from consts import INDEX_NAME
 
 load_dotenv()
 
-def run_llm(query: str) -> Any:
+def run_llm(query: str, chat_history: List[Tuple[str, Any]]=[]) -> Any:
     embeddings = OpenAIEmbeddings()
     docserach = PineconeLangChain.from_existing_index(
         index_name=INDEX_NAME, embedding=embeddings
     )
     chat = ChatOpenAI(verbose=True, temperature=0, model_name="gpt-4o-mini")
-    qa = RetrievalQA.from_chain_type(
+
+    qa = ConversationalRetrievalChain.from_llm(
         llm=chat,
-        chain_type="stuff",
         retriever=docserach.as_retriever(),
-        return_source_documents=True,
+        return_source_documents=True
     )
 
-    return qa({"query": query})
+    return qa({"question": query, "chat_history": chat_history})
 
 
 def test(query: str):
