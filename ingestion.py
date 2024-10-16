@@ -10,6 +10,8 @@ from langchain_community.document_loaders import ReadTheDocsLoader
 from langchain_community.vectorstores import Pinecone as PineconLangChain
 from pinecone import Pinecone
 
+from consts import INDEX_NAME
+
 load_dotenv()
 
 def ingest_docs(path:str, batch_size: int):
@@ -32,7 +34,7 @@ def ingest_docs(path:str, batch_size: int):
         print(f"Going to insert {len(documents)} to pinecone")
 
         embeddings = OpenAIEmbeddings()
-        PineconLangChain.from_documents(documents=documents, embedding=embeddings, index_name="langchain-doc")
+        PineconLangChain.from_documents(documents=documents, embedding=embeddings, index_name=INDEX_NAME)
 
         if total % 1000 == 0:
             print(f"Processed {total} documents")
