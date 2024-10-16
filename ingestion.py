@@ -14,7 +14,8 @@ from consts import INDEX_NAME
 
 load_dotenv()
 
-def ingest_docs(path:str, batch_size: int):
+
+def ingest_docs(path: str, batch_size: int):
     print(f"dir:{path}")
     loader = ReadTheDocsLoader(path)
 
@@ -34,7 +35,9 @@ def ingest_docs(path:str, batch_size: int):
         print(f"Going to insert {len(documents)} to pinecone")
 
         embeddings = OpenAIEmbeddings()
-        PineconLangChain.from_documents(documents=documents, embedding=embeddings, index_name=INDEX_NAME)
+        PineconLangChain.from_documents(
+            documents=documents, embedding=embeddings, index_name=INDEX_NAME
+        )
 
         if total % 1000 == 0:
             print(f"Processed {total} documents")
@@ -59,5 +62,5 @@ def change_document_source_path(documents: List[Document]):
         doc.metadata.update({"source": new_url})
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ingest_docs("langchain-docs/api.python.langchain.com/en/latest", 500)
